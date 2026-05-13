@@ -24,10 +24,11 @@ let users = [
 ];
 
 // GET request: Retrieve all users
+//Define a route handler for GET requests to the root path "/"
 router.get("/",(req,res)=>{
-  // Copy the code here
-      res.send(users);
-  res.send("Yet to be implemented")//This line is to be replaced with actual return value
+  //send a JSON response containing the user array, formatted as indentation of 4 spaces for eadability
+  res.send(JSON.stringify({users}, null, 4));
+
 });
 
 // GET by specific ID request: Retrieve a single user with email ID
@@ -36,8 +37,9 @@ router.get("/:email",(req,res)=>{
     const email = req.params.email;
     // Filter the users array to find users whose email matches the extracted email parameter
     let filtered_users = users.filter((user) => user.email === email);
-    // Send the filtered_users array as the response to the client
+    //send the filtered_users array as the response to the client 
     res.send(filtered_users);
+
 });
 
 
@@ -45,7 +47,7 @@ router.get("/:email",(req,res)=>{
 // POST request: Create a new user
 router.post("/",(req,res)=>{
       // Push a new user object into the users array based on query parameters from the request
-  user.push({
+  users.push({
     "firstName" : req.query.firstName,
     "lastName" : req.query.lastName,
     "email" : req.query.email,
@@ -58,15 +60,63 @@ router.post("/",(req,res)=>{
 
 // PUT request: Update the details of a user by email ID
 router.put("/:email", (req, res) => {
-  // Copy the code here
-  res.send("Yet to be implemented")//This line is to be replaced with actual return value
+    // Extract the email parameter from the request URL
+    const email = req.params.email;
+    // Filter the users array to find users whose email matches the extracted email parameter
+    let filtered_users = users.filter((user) => user.email === email);
+
+    if (filtered_users.length > 0) {
+      // Select the first matching user and update attributes if provided
+      let filtered_user = filtered_users[0];
+      
+      //Extract and update DOB if provided
+      let DOB = req.query.DOB;
+      if(DOB){
+        filtered_user.DOB = DOB;
+      };
+
+      /*
+      Include similar old user entry with updated user
+      let email
+      */
+
+      //Extract and update firstName if provided
+      let firstName = req.query.firstName;
+      if(firstName){
+        filtered_user.firstName = firstName;
+      };
+
+      //Extract and update lastName if provided
+      let lastName = req.query.lastName;
+      if(lastName){
+        filtered_user.lastName = lastName;
+      };
+
+      //Replace old user entry with updated user
+      //remove old user entry
+      users = users.filter((user) => user.email != email);
+      //add updated user entry
+      users.push(filtered_user);
+
+      //send success message indicating the user has been updated
+      res.send(`The user with email ${email} has been updated!`);
+    }
+    else{
+      //send error messge if no user found
+      res.send(`No user found`);
+    }
+
 });
 
 
 // DELETE request: Delete a user by email ID
 router.delete("/:email", (req, res) => {
-  // Copy the code here
-  res.send("Yet to be implemented")//This line is to be replaced with actual return value
+  //Extract the email parameter from request URL
+  const email = req.params.email;
+  //Filter ther users array to exclude the user with the specified email  
+  users = users.filter((user) => user.email != email);
+  //send a success message as the response, indicating the user has been deleted
+  res.send(`the user with email ${email} deleted`);
 });
 
 module.exports=router;
