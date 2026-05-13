@@ -119,4 +119,35 @@ router.delete("/:email", (req, res) => {
   res.send(`the user with email ${email} deleted`);
 });
 
+router.get("/lastName/:lastName", (req, res) => {
+  //Extract the lastName parameter from the request
+  const lastName = req.params.lastName;
+  //Filter the users array to find users whose lastName matches the extracted lastName parameter
+  let filtered_lastName = users.filter((user) => user.lastName ===lastName);
+  //send the filterred users as the response to the client
+  res.send(filtered_lastName); 
+})
+
+
+
+//function to convert a date string in the format "dd-mm-yyyy" to a date object
+function getDateFromString(strDate) {
+  let [dd, mm, yyyy] = strDate.split('-');
+  return new Date(yyyy + "/" + mm + "/" + dd);
+};
+
+//Define a route handler for GET request to the "/sort" endpoint
+router.get("/sort", (req, res) => {
+  //sort the users array by DOB in ascending order
+  let sorted_users = users.sort(function(a, b) {
+    let d1 = getDateFromString(a.DOB);
+    let d2 = getDateFromString(b.DOB);
+    return d1 - d2;
+  });
+  //send the sorted_users array as the response to the clinet
+  res.send(sorted_users);
+})
+
+
+
 module.exports=router;
